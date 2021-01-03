@@ -1,0 +1,25 @@
+{
+  "name": "api-rest-where-is-my-book",
+  "version": "1.0.0",
+  "description": "Practica de api rest",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3L14S/api-rest-where-is-my-book.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/3L14S/api-rest-where-is-my-book/issues"
+  },
+  "homepage": "https://github.com/3L14S/api-rest-where-is-my-book#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "util": "^0.12.3"
+  }
+}
