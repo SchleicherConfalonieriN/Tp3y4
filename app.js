@@ -113,4 +113,126 @@ app.delete("/categoria/:id", async (req, res) => {
   }
 });
 
+//TESTING GITHUB
+//Use la misma variable que el ejemplo
+const qy = util.promisify(conexion.query).bind(conexion); // permite el uso de asyn-await en la conexion mysql
+
+app.post('/persona/', async(req, res)=>{
+    try{
+      //Verifico que vengan todos los campos completos
+      if(!req.body.nombre || !req.body.apellido || !req.body.alias || !req.body.email){
+        throw new Error ("No se envió alguno de los siguientes datos: Nombre, Apellido, Alias, Email");
+      }
+      //Verifico que la persona no este dada de alta previamente
+      let query = 'SELECT id FROM persona WHERE email = ?';
+      let respuesta = await qy(query, [req.body.email]);
+      if(respuesta.length > 0){
+        throw new Error('Persona ya existe en la base de datos');
+      }
+      //Se da de alta a la persona en la base de datos
+      query = 'INSERT INTO persona (nombre, apellido, alias, email) VALUES (?, ?, ?, ?)';
+      respuesta = await qy(query, [req.body.nombre, req.body.apellido, req.body.alias, req.body.email]);
+      
+      res.status(200).send("Persona agregada a la base de datos con exito");
+      res.send({'respuesta': respuesta});
+  
+    }
+    catch (error) {
+      console.error(error.message);
+      res.status(413).send({ error: error.message });
+    }
+  });
+
+//GET 1
+app.get('/persona', async (req, res)=>{
+    try{
+        const query = 'SELECT * FROM persona';
+        const respuesta = await qy(query);
+        
+        res.status(200).send("Busqueda exitosa");
+        res.send({'respuesta': respuesta});
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(413).send({ error: error.message });
+      }
+});
+//GET 2
+app.get('/persona/:id', async (req, res)=>{
+    try{
+        const query = 'SELECT * FROM persona WHERE id = ?';
+        const respuesta = await qy(query, [req.params.id]);
+
+        if(respuesta.length == 0){
+            throw new Error('Persona no se encuentra en la base de datos');
+        }
+        res.status(200).send("Busqueda exitosa");
+        res.send({'respuesta': respuesta});
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(413).send({ error: error.message });
+    }
+});
+
+//PUT
+app.put("/persona/:id", async (req, res) => {
+    try {
+      if (
+        !req.body.nombre ||
+        !req.body.apellido ||
+        !req.body.alias ||
+        !req.body.email
+      ) {
+        throw new Error("No se enviaron todos los datos");
+      }
+      const query = "select * from persona where id = ?";
+      const respuesta = await qy(query, [req.params.id]);
+      console.log(
+        req.body.email,
+        respuesta[0].email,
+      );
+      if (
+        respuesta[0].email != req.body.email
+      ) {
+        throw new Error("No se puede modificar el email");
+      }
+      const queryActualizar = "UPDATE persona SET nombre = ?, apellido = ?, alias = ? where id = ?";
+      const respuestaActualizada = await qy(queryActualizar, [
+        req.body.nombre,
+        req.body.apellido,
+        req.body.alias,
+        req.params.id,
+      ]);
+      res.status(200).send("Datos de la persona actualizados con exito");
+      res.send({'respuesta': respuestaActualizada});
+
+    } catch (error) {
+      console.error(error.message);
+      res.status(413).send({ error: error.message });
+    }
+  });
+
+//DELETE
+app.delete('/persona/:id', async(req, res)=>{
+    try {
+        let query = 'SELECT * FROM persona WHERE id = ?';
+
+        let respuesta = await qy(query, [req.params.id]);
+
+        if (respuesta.length == 0) {
+            throw new Error("El nombre id ingresado no existe en la base de datos, no se puede borrar");
+        };
+        query = 'DELETE FROM persona WHERE id = ?';
+
+        respuesta = await qy(query, [req.params.id]);
+        res.status(200).send("Persona eliminada de la base de datos");
+        res.send({'respuesta': respuesta});
+    }
+    catch (error) {
+        console.error(error.message);
+        res.status(413).send({ error: error.message });
+    }
+});
+
 app.listen(port, () => console.log(`escuchando en el puerto ${port}`));
