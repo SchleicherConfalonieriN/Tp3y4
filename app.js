@@ -1,12 +1,11 @@
-const error = require("console");
-const e = require("express");
+const error = require('console');
 const { query } = require("express");
 const express = require("express");
 const mysql = require("mysql");
 const app = express();
 const util = require("util");
 
-const port = process.env.PORT ? process.abort.env.PORT : 3000;
+const port = process.env.PORT ? process.env.PORT : 3000;
 app.use(express.json());
 
 const conexion = mysql.createConnection({
